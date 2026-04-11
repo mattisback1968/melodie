@@ -2,12 +2,13 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import mysql.connector
+#import cnx 
 
 # ======================
 # Connexion BDD
 # ======================
 def get_connection():
-    # ✅ Vérifie que tu peux te connecter à MySQL avant toute autre chose
+    # ✅ Vérification cnx MySQL
     return mysql.connector.connect(
         host="localhost",
         user="root",
@@ -41,7 +42,7 @@ def main_window():
         # 🔹 Supprime toutes les lignes actuelles
         for row in tree.get_children():
             tree.delete(row)
-        query = "SELECT id, artist, title, format, media_condition, sleeve_condition, price FROM melodie"
+        query = "SELECT id, artist, title, format, media_condition, sleeve_condition, price FROM melodie"# WHERE 1"
         params = []
         if artist_entry.get():
             query += " AND LOWER(artist) LIKE %s"
@@ -126,7 +127,7 @@ def main_window():
         values = tree.item(pk, "values")
         win_mod = tk.Toplevel(win)
         win_mod.title("Modifier disque")
-        labels = ["Artiste", "Titre", "Support", "Media Condition", "Sleeve Condition", "Prix"]
+        labels = ["Artiste", "Titre", "Support", "État du support", "État de la pochette", "Prix"]
         entries = {}
         for i, label in enumerate(labels):
             tk.Label(win_mod, text=label).grid(row=i, column=0)
