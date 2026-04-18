@@ -33,6 +33,10 @@ def main_window():
     artist_entry = tk.Entry(frm_search)
     artist_entry.grid(row=0, column=1)
 
+    """tk.Label(frm_search, text="Titre:").grid(row=1, column=2)
+    title_entry = tk.Entry(frm_search)
+    title_entry.grid(row=0, column=3)"""
+
     tk.Label(frm_search, text="Prix >").grid(row=0, column=2)
     price_entry = tk.Entry(frm_search, width=10)
     price_entry.grid(row=0, column=3)
@@ -42,20 +46,26 @@ def main_window():
         # 🔹 Supprime toutes les lignes actuelles
         for row in tree.get_children():
             tree.delete(row)
-        query = "SELECT id, artist, title, format, media_condition, sleeve_condition, price FROM melodie"# WHERE 1"
+        query = "SELECT id, artist, title, format, media_condition, sleeve_condition, price FROM melodie WHERE 1=1"
         params = []
+        print (query); #test
         if artist_entry.get():
             query += " AND LOWER(artist) LIKE %s"
+            print(artist_entry)
             params.append(f"%{artist_entry.get().lower()}%")
         if price_entry.get():
             try:
-                params.append(float(price_entry.get()))
-                query += " AND prix > %s"
+              print (price_entry);
+              params.append(float(price_entry.get()))
+              print(params); #test
+              query += "AND price > %s"
+              print (query, price_entry);
             except ValueError:
-                messagebox.showerror("Erreur", "Prix doit être un nombre")
-                return
+              messagebox.showerror("Erreur", "Prix doit être un nombre")
+            return
         conn = get_connection()
         cursor = conn.cursor()
+        print(params); #test
         cursor.execute(query, params)
         for r in cursor.fetchall():
             # 🔹 iid = PK pour modification/suppression invisibles
@@ -66,7 +76,7 @@ def main_window():
     tk.Button(frm_search, text="Rechercher", command=search).grid(row=0, column=4, padx=5)
 
     # --- Treeview
-    columns = ("Artiste", "Titre", "Format", "Media_condition", "Sleeve_condition", "Prix")
+    columns = ("Artiste", "Titre", "Format", "Media_condition", "Sleeve_condition", "Prix", "Stock")
     tree = ttk.Treeview(win, columns=columns, show="headings")
     for col in columns:
         tree.heading(col, text=col)
@@ -90,22 +100,22 @@ def main_window():
         def insert():
             # ✅ Valider les champs
             try:
-                prix_val = float(entries["Prix"].get())
+                prix = float(entries["Prix"].get())
             except ValueError:
                 messagebox.showerror("Erreur", "Prix doit être un nombre")
                 return
             data = (
                 entries["Artiste"].get(),
                 entries["Titre"].get(),
-                entries["Support"].get(),
+                entries["Format"].get(),
                 entries["Media Condition"].get(),
                 entries["Sleeve Condition"].get(),
-                prix_val
+                prix
             )
             conn = get_connection()
             cursor = conn.cursor()
             query = """
-            INSERT INTO melodie (artist, title, format, media_condition, sleeve_condition, price)
+            INSERT INTO melodie (artist, title, format, media_condition, sleeve_condition, prix)
             VALUES (%s,%s,%s,%s,%s,%s)
             """
             cursor.execute(query, data)

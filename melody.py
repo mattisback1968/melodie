@@ -1,4 +1,5 @@
 
+import decimal
 import tkinter as tk
 from tkinter import ttk, messagebox
 import mysql.connector
@@ -7,7 +8,7 @@ import mysql.connector
 # Connexion BDD
 # ======================
 def get_connection():
-    # ✅ Vérifie que tu peux te connecter à MySQL avant toute autre chose
+    # ✅ Vérif conx à MySQL
     return mysql.connector.connect(
         host="localhost",
         user="root",
@@ -98,8 +99,8 @@ def main_window():
                 entries["Titre"].get(),
                 entries["Support"].get(),
                 entries["Media Condition"].get(),
-                entries["Sleeve Condition"].get(),
-                prix_val
+                entries["Sleeve Condition"].get()""",
+                prix_val"""
             )
             conn = get_connection()
             cursor = conn.cursor()
