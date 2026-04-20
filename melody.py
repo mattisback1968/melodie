@@ -99,8 +99,8 @@ def main_window():
                 entries["Titre"].get(),
                 entries["Support"].get(),
                 entries["Media Condition"].get(),
-                entries["Sleeve Condition"].get()""",
-                prix_val"""
+                entries["Sleeve Condition"].get(),
+                prix_val
             )
             conn = get_connection()
             cursor = conn.cursor()
@@ -148,8 +148,8 @@ def main_window():
                 entries["Support"].get(),
                 entries["Media Condition"].get(),
                 entries["Sleeve Condition"].get(),
-                prix_val,
-                pk
+                entries["Prix"]
+                #pk
             )
             conn = get_connection()
             cursor = conn.cursor()
