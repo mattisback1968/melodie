@@ -1,0 +1,11 @@
+req_sql.txt
+
+# Bloquer tous les fichiers de log peu importe le dossier
+*.log
+
+# Recommandé pour Python (fichiers mis en cache et rapports d'erreur)
+__pycache__/
+*.pyc
+
+# Recommandé pour VS Code (configurations locales)
+.vscode/

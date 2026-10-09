@@ -1,6 +1,7 @@
 
+import decimal
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, Scale
 import mysql.connector
 #import cnx 
 
@@ -28,15 +29,14 @@ def main_window():
     h = 550 # height for the Tk root
 
     #get screen width and height
-    ws = win.winfo_screenwidth() # width of the screen
-    hs = win.winfo_screenheight() # height of the screen
+    ws = win.winfo_screenwidth() # screen width
+    hs = win.winfo_screenheight() # screen height
 
     # calculate x and y coordinates for the Tk root (win) window
     x = (ws/2) - (w/2)
     y = (hs/2) - (h/2)
 
-    # set the dimensions of the screen 
-    # and where it is placed
+    # set the dimensions and place of the screen 
     win.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
     #win.geometry("900x450")
@@ -45,17 +45,17 @@ def main_window():
     frm_search = tk.Frame(win)
     frm_search.pack(pady=10)
 
-    tk.Label(frm_search, text="Artiste:").grid(row=0, column=0)
+    tk.Label(frm_search, text="Artiste :").grid(row=0, column=0)
     artist_entry = tk.Entry(frm_search)
     artist_entry.grid(row=0, column=1)
 
-    tk.Label(frm_search, text="Titre:").grid(row=0, column=2)
+    tk.Label(frm_search, text="Titre :").grid(row=0, column=2)
     title_entry = tk.Entry(frm_search)
     title_entry.grid(row=0, column=3)
 
-    """tk.Label(frm_search, text="Prix >").grid(row=0, column=2)
+    tk.Label(frm_search, text="Prix >").grid(row=0, column=4)
     price_entry = tk.Entry(frm_search, width=10)
-    price_entry.grid(row=0, column=3)"""
+    price_entry.grid(row=0, column=5)
 
     # ✅ Fonction Recherche
     def search():
@@ -72,20 +72,21 @@ def main_window():
 
         if title_entry.get():
             #query += " AND LOWER(artist) LIKE %s"
-            print(title_entry)
+            print(f"Title_entry : {title_entry}")
             params.append(f"%{title_entry.get()}%")
-
-        """if price_entry.get():
+            print("paramètres ",params); #test
+        if price_entry.get():
             try:
               print (price_entry);
-              params.append(float(price_entry.get()))
+              #params.append(float(price_entry.get()))
+              if float(price_entry)
               print(params); #test
               query += " AND price > %s"
               query +=" order by title"
               print (query, price_entry);
             except ValueError:
               messagebox.showerror("Erreur", "Prix doit être un nombre")
-            return"""
+            return
         conn = get_connection()
         cursor = conn.cursor()
         print("paramètres ",params); #test
@@ -104,7 +105,10 @@ def main_window():
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, width=120)
+    w = Scale(win, from_=0, to=50)
+    w.pack()
     tree.pack(pady=10, fill="both", expand=True)
+    
 
     # ======================
     # Fonctions Insérer / Modifier / Supprimer
@@ -221,6 +225,7 @@ def main_window():
     # --- Boutons
     frm_buttons = tk.Frame(win)
     frm_buttons.pack(pady=5)
+
     tk.Button(frm_buttons, text="Insérer", command=insert_window).grid(row=0, column=0, padx=5)
     tk.Button(frm_buttons, text="Modifier", command=modify_window).grid(row=0, column=1, padx=5)
     tk.Button(frm_buttons, text="Supprimer", command=delete_entry).grid(row=0, column=2, padx=5)

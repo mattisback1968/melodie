@@ -1,7 +1,7 @@
 
 import decimal
 import tkinter as tk
-from tkinter import ttk, messagebox, Scale
+from tkinter import ttk, messagebox
 import mysql.connector
 #import cnx 
 
@@ -22,7 +22,8 @@ def get_connection():
 # ======================
 def main_window():
     global tree
-    win = tk.Tk()
+    root = tk.Tk()
+    win = root
     win.title("Disquaire - Tkinter MySQL")
     
     w = 900 # width for the Tk root
@@ -38,8 +39,6 @@ def main_window():
 
     # set the dimensions and place of the screen 
     win.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
-    #win.geometry("900x450")
 
     # --- Frame Recherche
     frm_search = tk.Frame(win)
@@ -58,38 +57,40 @@ def main_window():
     price_entry.grid(row=0, column=5)
 
     # ✅ Fonction Recherche
-    def search():
+    def search(event = None):
+        print("Recherche")
         # 🔹 Supprime toutes les lignes actuelles
         for row in tree.get_children():
             tree.delete(row)
-        query = "SELECT id, artist, title, label, format, media_condition, sleeve_condition, price FROM melodie WHERE 1=1"
+        query = "SELECT id, artist, title, label, support, media_condition, sleeve_condition, price FROM melodie WHERE 1=1"
         params = []
         print (query); #test
         if artist_entry.get():
             query += " AND LOWER(artist) LIKE %s"
-            print(artist_entry)
+            print(artist_entry.get())
             params.append(f"%{artist_entry.get().lower()}%")
 
         if title_entry.get():
-            #query += " AND LOWER(artist) LIKE %s"
+            query += " AND LOWER(title) LIKE %s"
             print(f"Title_entry : {title_entry}")
             params.append(f"%{title_entry.get()}%")
-            print("paramètres ",params); #test
+            print("paramètres ", params); #test
         
         if price_entry.get():
             try:
-              print (price_entry);# test vérification
-              #params.append(float(price_entry.get()))
+              #print (price_entry.get());# test vérification
+              #params.append(float(price_entry.get())
               prix = float(price_entry.get())
-              print(f"Prix float: {prix}, prix price_entry : {price_entry}")#test vérification
-              params.append(price_entry.get())
+              query += " AND price > %s"
+              #print(f"Prix float: {prix}, prix price_entry : {price_entry}")#test vérification
+              params.append(prix) #test, orig price_entry.get()
               print(params); #test
-              query += " AND prix > %s"
-              query +=" order by title"
-              print(f"query : {query}, price_entry : {price_entry}") #test
+              #query +=" order by title"
+              #print(f"query : {query}, price_entry : {price_entry}") #test
             except ValueError:
               messagebox.showerror("Erreur", "Prix doit être un nombre")
-            return
+              return 
+
         conn = get_connection()
         cursor = conn.cursor()
         print("paramètres ", params); #test
@@ -100,17 +101,24 @@ def main_window():
         cursor.close()
         conn.close()
 
-    tk.Button(frm_search, text="Rechercher", command=search).grid(row=0, column=7, padx=5)#orig col =4
+    btn = tk.Button(frm_search, text="Rechercher", command=search)
+    #tk.Button(frm_search, text="Rechercher", command=search).grid(row=0, column=7, padx=5)#orig col =4
+    win.bind("<Return>", search)
 
     # --- Treeview
-    columns = ("Artiste", "Titre", "Label", "Format", "État du support", "État de la pochette", "Prix")
+    columns = ("Artiste", "Titre", "Label", "Support", "État du support", "État de la pochette", "Prix")
     tree = ttk.Treeview(win, columns=columns, show="headings")
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, width=120)
-    w = Scale(win, from_=0, to=50)# orig = win, not frm_search
-    w.pack()
+    
+    #tree.pack(pady=10, fill="both", expand=True)
+    scrollbar = ttk.Scrollbar(win, orient = "vertical", command=tree.yview)
+    tree.configure(yscrollcommand = scrollbar.set)
+    scrollbar.pack(side="right", fill="y")
     tree.pack(pady=10, fill="both", expand=True)
+    #scrollbar = Scrollbar(win, orient = "vertical", command=canvas.yview)
+    #scrollbar.pack(side="right", fill="y")
     
 
     # ======================
@@ -119,7 +127,7 @@ def main_window():
     def insert_window():
         win_ins = tk.Toplevel(win)
         win_ins.title("Insérer un disque")
-        labels = ["Artiste", "Titre", "Label", "Format", "État du support", "État de la pochette", "Prix"]
+        labels = ["Artiste", "Titre", "Label", "Support", "État du support", "État de la pochette", "Prix"]
         entries = {}
         for i, label in enumerate(labels):
             tk.Label(win_ins, text=label).grid(row=i, column=0)
@@ -138,7 +146,7 @@ def main_window():
                 entries["Artiste"].get(),
                 entries["Titre"].get(),
                 entries["Label"].get(),
-                entries["Format"].get(),
+                entries["Support"].get(),
                 entries["État du support"].get(),
                 entries["État de la pochette"].get(),
                 entries["Prix"].get()
@@ -146,7 +154,7 @@ def main_window():
             conn = get_connection()
             cursor = conn.cursor()
             query = """
-            INSERT INTO melodie (artist, title, label, format, media_condition, sleeve_condition, price)
+            INSERT INTO melodie (artist, title, label, support, media_condition, sleeve_condition, price)
             VALUES (%s,%s,%s,%s,%s,%s,%s)
             """
             cursor.execute(query, data)
@@ -198,7 +206,7 @@ def main_window():
             conn = get_connection()
             cursor = conn.cursor()
             query = """
-            UPDATE melodie SET artist=%s, title=%s, label=%s, format=%s, media_condition=%s, sleeve_condition=%s, price=%s
+            UPDATE melodie SET artist=%s, title=%s, label=%s, support=%s, media_condition=%s, sleeve_condition=%s, price=%s
             WHERE id=%s
             """
             cursor.execute(query, data)
