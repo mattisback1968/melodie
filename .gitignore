@@ -5,6 +5,7 @@ cnx.txt
 .gitignore
 *bug.py
 *_old_*
+/archive/
 
 # Bloquer tous les fichiers de log peu importe le dossier
 *.log
