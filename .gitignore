@@ -1,4 +1,10 @@
+# --- spécifique projet melody
 req_sql.txt
+*old*.py
+cnx.txt
+.gitignore
+*bug.py
+*_old_*
 
 # Bloquer tous les fichiers de log peu importe le dossier
 *.log
@@ -9,3 +15,17 @@ __pycache__/
 
 # Recommandé pour VS Code (configurations locales)
 .vscode/
+
+# --- RÈGLE ACTUELLE ET GÉNÉRALE ---
+*.log
+.env
+
+# --- CONFIGURATION PYTHON ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+
